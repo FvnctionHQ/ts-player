@@ -32,7 +32,7 @@ Check if player is playing <br />
 Check if player is in loop mode <br />
 `var isLooping: Bool { get }`
 
-## Delegate
+### Delegate
 
 
 `func playerPlaybackProgressDidUpdate(player: TSPlayer, progress: TimeInterval, isSegment: Bool)` <br />
