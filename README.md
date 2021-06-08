@@ -8,37 +8,37 @@ To add TSPlayer to your Xcode project, select File -> Swift Packages -> Add Pack
 
 ## Api
 
-After init load file or use convenience init
+After init load file or use convenience init <br />
 `func load(file: AVAudioFile) throws`
 
-Play entire file
+Play entire file  <br />
 `func play()`
 
-Play entire file from time
+Play entire file from time <br />
 `func play(from time: TimeInterval)`
 
-Play segment from the file
+Play segment from the file <br />
 `func play(from inTime: TimeInterval, till outTime: TimeInterval)`
 
-Pause playback
+Pause playback <br />
 `func pause()`
 
-Toggle loopining
+Toggle loopining <br />
 `func toggleLooping()`
 
-Check if player is playing
+Check if player is playing <br />
 `var isPlaying: Bool { get }`
 
-Check if player is in loop mode
+Check if player is in loop mode <br />
 `var isLooping: Bool { get }`
 
 ## Delegate
 
-Called as player plays the file, `isSegment` is true if currently played file is a segment of entire file defined by `inTime` and `outTime`
-`func playerPlaybackProgressDidUpdate(player: TSPlayer, progress: TimeInterval, isSegment: Bool)`
+Called as player plays the file, `isSegment` is true if currently played file is a segment of entire file defined by `inTime` and `outTime` <br />
+`func playerPlaybackProgressDidUpdate(player: TSPlayer, progress: TimeInterval, isSegment: Bool)` <br />
 
-Called when player finished playback in non-looping mode
-`func playerDidFinish(player: TSPlayer)`
+Called when player finished playback in non-looping mode <br />
+`func playerDidFinish(player: TSPlayer)` 
 
-Called when player experienced an error
+Called when player experienced an error <br />
 `func playerDidFail(player: TSPlayer, error: TSPlayerModuleError)`
