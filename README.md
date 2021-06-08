@@ -34,11 +34,13 @@ Check if player is in loop mode <br />
 
 ## Delegate
 
-Called as player plays the file, `isSegment` is true if currently played file is a segment of entire file defined by `inTime` and `outTime` <br />
+
 `func playerPlaybackProgressDidUpdate(player: TSPlayer, progress: TimeInterval, isSegment: Bool)` <br />
+Called as player plays the file, `isSegment` is true if currently played file is a segment of entire file defined by `inTime` and `outTime` 
 
-Called when player finished playback in non-looping mode <br />
-`func playerDidFinish(player: TSPlayer)` 
+`func playerDidFinish(player: TSPlayer)`   <br />
+Called when player finished playback in non-looping mode
 
-Called when player experienced an error <br />
-`func playerDidFail(player: TSPlayer, error: TSPlayerModuleError)`
+`func playerDidFail(player: TSPlayer, error: TSPlayerModuleError)`  <br />
+Called when player experienced an error
+
