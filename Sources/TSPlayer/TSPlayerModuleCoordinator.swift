@@ -29,6 +29,8 @@ extension TSPlayerModuleCoordinator: TSPlayerModuleInterface {
             return
         }
         
+        
+        
         self._play(player: p)
     }
     
@@ -43,7 +45,7 @@ extension TSPlayerModuleCoordinator: TSPlayerModuleInterface {
     
         if (time > p.duration || time.sign == .minus) {
             
-            delegate.playerDidFail(player: self, error: TSPlayerModuleError.timeNotValid)
+            delegate.playerDidFail(player: self, error: TSPlayerModuleError.fromTimeNotValid)
             return
         }
         
@@ -54,17 +56,13 @@ extension TSPlayerModuleCoordinator: TSPlayerModuleInterface {
     public func play(from inTime: TimeInterval, till outTime: TimeInterval) {
      
         
-        let url = tempDirectoryURLForLoadedFileSegment()
-        
-        guard let segmement = loadedFile.extract(to: url, from: inTime, to: outTime) else {
-            
-            delegate.playerDidFail(player: self, error: .failedToCreatePlaySegment(nil))
+        guard let segment = segmentFromFile(file: loadedFile, inTime: inTime, outTime: outTime) else {
             return
         }
         
         do {
             
-            _segmentPlayer = try AVAudioPlayer(contentsOf: segmement.url)
+            _segmentPlayer = try AVAudioPlayer(contentsOf: segment.url)
             
             isInSegmentMode = true
             
@@ -72,6 +70,11 @@ extension TSPlayerModuleCoordinator: TSPlayerModuleInterface {
                 delegate.playerDidFail(player: self, error: TSPlayerModuleError.playerNotReady)
                 return
             }
+            
+
+            
+            self.segmentInTime = inTime
+            
             _play(player: p)
             
             
@@ -155,6 +158,7 @@ extension TSPlayerModuleCoordinator: AVAudioPlayerDelegate {
 
 public class TSPlayerModuleCoordinator: NSObject {
     unowned let delegate: TSPlayerModuleDelegate
+    var segmentInTime: TimeInterval = 0
     var playbackTimer: Timer?
     var numberOfLoops = 0
     var isInSegmentMode = false {
@@ -217,7 +221,8 @@ public class TSPlayerModuleCoordinator: NSObject {
     
     @objc func updatePlaybackProgress() {
         
-        delegate.playerPlaybackProgressDidUpdate(player: self, progress: player!.currentTime, isSegment: isInSegmentMode)
+        
+        delegate.playerPlaybackProgressDidUpdate(player: self, progress: playbackProgress(), isSegment: isInSegmentMode)
     }
     
     
@@ -228,6 +233,43 @@ public class TSPlayerModuleCoordinator: NSObject {
     
     func stopTimer() {
         self.playbackTimer?.invalidate()
+    }
+    
+    func segmentFromFile(file: AVAudioFile, inTime: TimeInterval, outTime: TimeInterval) -> AVAudioFile? {
+        
+        let url = tempDirectoryURLForLoadedFileSegment()
+        
+        if (inTime > loadedFile.duration || inTime.sign == .minus) {
+            
+            delegate.playerDidFail(player: self, error: TSPlayerModuleError.fromTimeNotValid)
+            return nil
+        }
+        
+        if (outTime > loadedFile.duration || outTime.sign == .minus || outTime <= inTime) {
+            
+            delegate.playerDidFail(player: self, error: TSPlayerModuleError.tillTimeNotValid)
+            return nil
+        }
+        
+        guard let segmement = loadedFile.extract(to: url, from: inTime, to: outTime) else {
+            
+            delegate.playerDidFail(player: self, error: .failedToCreatePlaySegment(nil))
+            return nil
+        }
+        
+        return segmement
+    }
+    
+    func playbackProgress() -> TimeInterval {
+        
+        var p: TimeInterval
+        if (isInSegmentMode) {
+            p = self.segmentInTime + player!.currentTime
+        } else {
+            p = player!.currentTime
+        }
+        
+        return p
     }
     
     func tempDirectoryURLForLoadedFileSegment() -> URL {
@@ -244,8 +286,10 @@ public class TSPlayerModuleCoordinator: NSObject {
         let tempURL = tempDirectory.appendingPathComponent("\(loadedFile.url.lastPathComponent)")
         
         do {
-            
-            try fileManager.removeItem(atPath: tempURL.path)
+            if (fileManager.fileExists(atPath: tempURL.path)) {
+                try fileManager.removeItem(atPath: tempURL.path)
+            }
+           
 
         } catch let error  {
         

@@ -9,8 +9,8 @@ import Foundation
 
 
 public enum TSPlayerModuleError: Error {
-    
-    case timeNotValid
+    case tillTimeNotValid
+    case fromTimeNotValid
     case playerNotReady
     case audiokitError(String?)
     case failedToClearTempSegment(String?)
@@ -26,9 +26,13 @@ extension TSPlayerModuleError: LocalizedError {
     public var errorDescription: String? {
         switch self {
        
-        case .timeNotValid:
+        case .tillTimeNotValid:
   
-            return "TSPlayerModule Error: From time position is invalid"
+            return "TSPlayerModule Error: End time position is invalid"
+            
+        case .fromTimeNotValid:
+  
+            return "TSPlayerModule Error: Start time position is invalid"
             
         case .playerNotReady:
   
