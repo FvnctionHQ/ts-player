@@ -14,6 +14,10 @@ extension TSPlayerModuleCoordinator: TSPlayerModuleInterface {
    
     public func load(file: AVAudioFile) throws {
         
+        if (file.duration.isZero) {
+            throw TSPlayerModuleError.fileDurationIsZero
+        }
+        
         isInSegmentMode = false
         
         loadedFile = file

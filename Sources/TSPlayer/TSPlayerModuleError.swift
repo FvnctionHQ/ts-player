@@ -9,6 +9,7 @@ import Foundation
 
 
 public enum TSPlayerModuleError: Error {
+    case fileDurationIsZero
     case tillTimeNotValid
     case fromTimeNotValid
     case playerNotReady
@@ -25,6 +26,11 @@ public enum TSPlayerModuleError: Error {
 extension TSPlayerModuleError: LocalizedError {
     public var errorDescription: String? {
         switch self {
+        
+        case .fileDurationIsZero:
+  
+            return "TSPlayerModule Error: File duration is 0"
+            
        
         case .tillTimeNotValid:
   
