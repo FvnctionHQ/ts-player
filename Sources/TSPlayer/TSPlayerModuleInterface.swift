@@ -15,7 +15,11 @@ public protocol TSPlayerModuleInterface {
     func play(from time: TimeInterval)
     func play(from inTime: TimeInterval, till outTime: TimeInterval)
     func pause()
+    func seek(to time: TimeInterval)
     func toggleLooping()
+    
+    var duration: TimeInterval { get }
+    var currentTime: TimeInterval { get }
     
     var isPlaying: Bool { get }
     var isLooping: Bool { get }

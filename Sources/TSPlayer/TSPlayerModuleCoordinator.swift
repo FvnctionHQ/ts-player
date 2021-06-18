@@ -12,6 +12,40 @@ public typealias TSPlayer = TSPlayerModuleCoordinator
 
 extension TSPlayerModuleCoordinator: TSPlayerModuleInterface {
    
+    public var duration: TimeInterval {
+        
+        guard let p = player else {
+            delegate.playerDidFail(player: self, error: TSPlayerModuleError.playerNotReady)
+            return 0
+        }
+        
+        return p.duration
+    }
+    
+  
+    public var currentTime: TimeInterval {
+        guard let p = player else {
+            delegate.playerDidFail(player: self, error: TSPlayerModuleError.playerNotReady)
+            return 0
+        }
+        
+        return p.currentTime
+    }
+    
+    
+    public func seek(to time: TimeInterval) {
+        
+        guard let p = player else {
+            delegate.playerDidFail(player: self, error: TSPlayerModuleError.playerNotReady)
+            return
+        }
+        
+        
+        
+        self._seekTo(player: p, time: time)
+    }
+    
+   
     public func load(file: AVAudioFile) throws {
         
         if (file.duration.isZero) {
@@ -205,6 +239,12 @@ public class TSPlayerModuleCoordinator: NSObject {
         player.numberOfLoops = numberOfLoops
         player.play()
         startTimer()
+    }
+    
+    func _seekTo(player: AVAudioPlayer, time: TimeInterval) {
+        
+        player.currentTime = time
+        updatePlaybackProgress()
     }
     
     func _play(player: AVAudioPlayer, from time: TimeInterval) {
