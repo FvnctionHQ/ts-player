@@ -14,6 +14,7 @@ public protocol TSPlayerModuleInterface {
     func play()
     func play(from time: TimeInterval)
     func play(from inTime: TimeInterval, till outTime: TimeInterval)
+    func playWithoutSegment(from inTime: TimeInterval, till outTime: TimeInterval)
     func pause()
     func seek(to time: TimeInterval)
     func toggleLooping()

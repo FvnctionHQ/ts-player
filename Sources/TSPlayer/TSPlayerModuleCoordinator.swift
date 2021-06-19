@@ -51,7 +51,7 @@ extension TSPlayerModuleCoordinator: TSPlayerModuleInterface {
         if (file.duration.isZero) {
             throw TSPlayerModuleError.fileDurationIsZero
         }
-        
+        outTime = file.duration
         isInSegmentMode = false
         
         loadedFile = file
@@ -89,6 +89,31 @@ extension TSPlayerModuleCoordinator: TSPlayerModuleInterface {
         
         self._play(player: p, from: time)
         
+    }
+    
+    public func playWithoutSegment(from inTime: TimeInterval, till outTime: TimeInterval) {
+        
+        guard let p = player else {
+            delegate.playerDidFail(player: self, error: TSPlayerModuleError.playerNotReady)
+            return
+        }
+        
+        if (inTime > p.duration || inTime.sign == .minus) {
+            
+            delegate.playerDidFail(player: self, error: TSPlayerModuleError.fromTimeNotValid)
+            return
+        }
+        
+        if (outTime > loadedFile.duration || outTime.sign == .minus || outTime <= inTime) {
+            
+            delegate.playerDidFail(player: self, error: TSPlayerModuleError.tillTimeNotValid)
+            return
+        }
+        
+        
+        self.outTime = outTime
+        
+        self._play(player: p, from: inTime)
     }
     
     public func play(from inTime: TimeInterval, till outTime: TimeInterval) {
@@ -196,6 +221,7 @@ extension TSPlayerModuleCoordinator: AVAudioPlayerDelegate {
 
 public class TSPlayerModuleCoordinator: NSObject {
     unowned let delegate: TSPlayerModuleDelegate
+    var outTime: TimeInterval!
     var segmentInTime: TimeInterval = 0
     var playbackTimer: Timer?
     var numberOfLoops = 0
@@ -265,6 +291,12 @@ public class TSPlayerModuleCoordinator: NSObject {
     
     @objc func updatePlaybackProgress() {
         
+        let progress = playbackProgress()
+        if (progress >= outTime) {
+            pause()
+            delegate.playerDidFinish(player: self)
+            return
+        }
         
         delegate.playerPlaybackProgressDidUpdate(player: self, progress: playbackProgress(), isSegment: isInSegmentMode)
     }
