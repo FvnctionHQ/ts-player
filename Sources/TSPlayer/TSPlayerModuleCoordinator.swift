@@ -11,6 +11,13 @@ import AVFAudio
 public typealias TSPlayer = TSPlayerModuleCoordinator
 
 extension TSPlayerModuleCoordinator: TSPlayerModuleInterface {
+    
+    public var isReady: Bool {
+        get {
+            loadedFile  != nil
+        }
+    }
+    
    
     public var duration: TimeInterval {
         

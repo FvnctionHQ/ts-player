@@ -24,6 +24,7 @@ public protocol TSPlayerModuleInterface {
     
     var isPlaying: Bool { get }
     var isLooping: Bool { get }
+    var isReady: Bool { get }
 }
 
 public protocol TSPlayerModuleDelegate: AnyObject {
