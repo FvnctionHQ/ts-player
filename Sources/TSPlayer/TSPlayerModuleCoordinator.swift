@@ -170,10 +170,18 @@ extension TSPlayerModuleCoordinator: TSPlayerModuleInterface {
     public func toggleLooping() {
         
         if (self.numberOfLoops == 0) {
-            self.numberOfLoops = -1
+            self.numberOfLoops = 15_000
         } else {
             self.numberOfLoops = 0
         }
+        
+        let wasPlaying = isPlaying
+        pause()
+        if (wasPlaying) {
+            
+            play()
+        }
+        
        
     }
     
@@ -188,7 +196,7 @@ extension TSPlayerModuleCoordinator: TSPlayerModuleInterface {
     
     public var isLooping: Bool {
         get {
-            return numberOfLoops == -1
+            return numberOfLoops == 15_000
         }
     }
     
