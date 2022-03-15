@@ -167,24 +167,6 @@ extension TSPlayerModuleCoordinator: TSPlayerModuleInterface {
         self._pause(player: p)
     }
     
-    public func toggleLooping() {
-        
-        if (self.numberOfLoops == 0) {
-            self.numberOfLoops = 15_000
-        } else {
-            self.numberOfLoops = 0
-        }
-        
-        let wasPlaying = isPlaying
-        pause()
-        if (wasPlaying) {
-            
-            play()
-        }
-        
-       
-    }
-    
     public var isPlaying: Bool {
         get {
             guard let p = player else {
@@ -198,9 +180,19 @@ extension TSPlayerModuleCoordinator: TSPlayerModuleInterface {
         get {
             return numberOfLoops == 15_000
         }
+        set (newValue) {
+            self.numberOfLoops = newValue ? 15_000 : 0
+            let wasPlaying = isPlaying
+            pause()
+            if (wasPlaying) {
+                if (isInSegmentMode) {
+                    play(from: segmentInTime, till: outTime)
+                } else {
+                    play()
+                }
+            }
+        }
     }
-    
-    
 }
 
 extension TSPlayerModuleCoordinator: AVAudioPlayerDelegate {
@@ -283,7 +275,6 @@ public class TSPlayerModuleCoordinator: NSObject {
     }
     
     func _seekTo(player: AVAudioPlayer, time: TimeInterval) {
-        
         player.currentTime = time
         updatePlaybackProgress()
     }
@@ -296,7 +287,6 @@ public class TSPlayerModuleCoordinator: NSObject {
     }
     
     func _pause(player: AVAudioPlayer) {
-        
         player.pause()
         stopTimer()
        
@@ -305,7 +295,6 @@ public class TSPlayerModuleCoordinator: NSObject {
 
     
     @objc func updatePlaybackProgress() {
-        
         let progress = playbackProgress()
         if (progress >= outTime) {
             pause()
@@ -318,7 +307,6 @@ public class TSPlayerModuleCoordinator: NSObject {
     
     
     func startTimer() {
-        
         self.playbackTimer = Timer.scheduledTimer(timeInterval: 0.001, target: self, selector: #selector(updatePlaybackProgress), userInfo: nil, repeats: true)
     }
     
@@ -327,7 +315,6 @@ public class TSPlayerModuleCoordinator: NSObject {
     }
     
     func segmentFromFile(file: AVAudioFile, inTime: TimeInterval, outTime: TimeInterval) -> AVAudioFile? {
-        
         let url = tempDirectoryURLForLoadedFileSegment()
         
         if (inTime > loadedFile.duration || inTime.sign == .minus) {
@@ -352,7 +339,6 @@ public class TSPlayerModuleCoordinator: NSObject {
     }
     
     func playbackProgress() -> TimeInterval {
-        
         var p: TimeInterval
         if (isInSegmentMode) {
             p = self.segmentInTime + player!.currentTime
@@ -387,6 +373,4 @@ public class TSPlayerModuleCoordinator: NSObject {
             delegate.playerDidFail(player: self, error: .failedToClearTempSegment(error.localizedDescription))
         }
     }
-    
-
 }
