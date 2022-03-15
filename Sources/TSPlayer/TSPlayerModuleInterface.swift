@@ -17,13 +17,12 @@ public protocol TSPlayerModuleInterface {
     func playWithoutSegment(from inTime: TimeInterval, till outTime: TimeInterval)
     func pause()
     func seek(to time: TimeInterval)
-    func toggleLooping()
     
     var duration: TimeInterval { get }
     var currentTime: TimeInterval { get }
     
     var isPlaying: Bool { get }
-    var isLooping: Bool { get }
+    var isLooping: Bool { get set }
     var isReady: Bool { get }
 }
 
